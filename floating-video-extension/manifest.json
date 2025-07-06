@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Floating Video Player",
+  "version": "1.0",
+  "description": "Sayfa üzerinde sürüklenebilir video oynatıcı",
+  "permissions": ["scripting", "activeTab"],
+  "action": {
+    "default_title": "Videoyu Başlat"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["floating-player.html", "style.css", "video/videoplayback.mp4"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
