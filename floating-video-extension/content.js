@@ -57,31 +57,35 @@ closeButton.addEventListener('click', () => {
   container.remove();
 });
 
-// 🎬 Video
-const video = document.createElement('video');
-video.src = chrome.runtime.getURL('video/videoplayback.mp4');
-video.controls = true;
-video.autoplay = true;
-video.style.width = '100%';
-video.style.height = '100%';
-video.style.flexGrow = '1';
-video.style.objectFit = 'contain'; // cover yerine contain
-video.style.display = 'block';
-video.style.borderRadius = '12px';
-video.style.boxShadow = '0 2px 16px 0 rgba(0,0,0,0.18)';
-video.style.backgroundColor = '#111';
-video.style.position = 'relative';
+// Transcript alanı oluştur
+const transcriptDiv = document.createElement('div');
+transcriptDiv.id = 'transcript';
+transcriptDiv.style.marginTop = '10px';
+transcriptDiv.style.background = '#fff';
+transcriptDiv.style.color = '#222';
+transcriptDiv.style.padding = '8px';
+transcriptDiv.style.borderRadius = '8px';
+transcriptDiv.style.minHeight = '40px';
+transcriptDiv.style.fontSize = '16px';
+transcriptDiv.style.overflowY = 'auto';
+transcriptDiv.textContent = 'Altyazı yükleniyor...';
+container.appendChild(transcriptDiv);
 
-// Gradient overlay ekle
-const gradientOverlay = document.createElement('div');
-gradientOverlay.style.position = 'absolute';
-gradientOverlay.style.left = '0';
-gradientOverlay.style.right = '0';
-gradientOverlay.style.bottom = '0';
-gradientOverlay.style.height = '40px';
-gradientOverlay.style.pointerEvents = 'none';
-gradientOverlay.style.borderRadius = '0 0 12px 12px';
-gradientOverlay.style.background = 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(20,20,20,0.35) 100%)';
+// YouTube altyazılarını çek
+function getYouTubeCaptions() {
+  let captions = '';
+  // YouTube altyazılarını bul
+  const captionNodes = document.querySelectorAll('.ytp-caption-segment');
+  captionNodes.forEach(node => {
+    captions += node.textContent + ' ';
+  });
+  transcriptDiv.textContent = captions.trim() || 'Altyazı bulunamadı.';
+}
+
+// YouTube sayfasında altyazı değiştikçe güncelle
+if (window.location.hostname.includes('youtube.com')) {
+  setInterval(getYouTubeCaptions, 1000);
+}
 
 // Container'a relative konumlandırma
 container.style.position = 'fixed';
@@ -98,8 +102,6 @@ container.style.minHeight = '120px';
 
 // DOM’a ekle
 container.appendChild(closeButton);
-container.appendChild(video);
-container.appendChild(gradientOverlay);
 document.body.appendChild(container);
 
 // 🖱️ Sürükleme

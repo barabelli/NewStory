@@ -25,3 +25,48 @@ document.addEventListener("mousemove", (e) => {
 document.addEventListener("mouseup", () => {
   isDragging = false;
 });
+
+const transcriptDiv = document.getElementById("transcript");
+const startSttBtn = document.getElementById("start-stt");
+
+let recognition;
+if ('webkitSpeechRecognition' in window) {
+  recognition = new webkitSpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = 'tr-TR'; // Türkçe için
+
+  let finalTranscript = '';
+
+  recognition.onresult = function(event) {
+    let interimTranscript = '';
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        finalTranscript += event.results[i][0].transcript;
+      } else {
+        interimTranscript += event.results[i][0].transcript;
+      }
+    }
+    transcriptDiv.textContent = finalTranscript + ' ' + interimTranscript;
+  };
+
+  recognition.onerror = function(event) {
+    transcriptDiv.textContent = 'Hata: ' + event.error;
+  };
+
+  startSttBtn.onclick = function() {
+    finalTranscript = '';
+    transcriptDiv.textContent = '';
+    recognition.start();
+    startSttBtn.disabled = true;
+    startSttBtn.textContent = 'Dinleniyor...';
+  };
+
+  recognition.onend = function() {
+    startSttBtn.disabled = false;
+    startSttBtn.textContent = 'Konuşmayı Yazıya Dökmeye Başla';
+  };
+} else {
+  startSttBtn.disabled = true;
+  transcriptDiv.textContent = 'Tarayıcınız konuşma tanıma API desteği vermiyor.';
+}
